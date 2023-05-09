@@ -214,14 +214,14 @@
 
         private static void ReplaceStatements(OpenXmlElement xmlElement, Dictionary<string, object> tags)
         {
-            var paragraphs = xmlElement.Descendants<Paragraph>().ToList();
+            var childElements = xmlElement.Descendants().ToList();
 
-            while (paragraphs.Any(s => s.InnerText.Contains("@if"))) 
+            while (childElements.Any(s => s.InnerText.Contains("@if"))) 
             {
-                var ifIndex = paragraphs.FindIndex(0, s => s.InnerText.Contains("@if"));
-                var endIfFinalIndex = paragraphs.FindIndex(ifIndex, s => s.InnerText.Contains("@endif"));
+                var ifIndex = childElements.FindIndex(0, s => s.InnerText.Contains("@if"));
+                var endIfFinalIndex = childElements.FindIndex(ifIndex, s => s.InnerText.Contains("@endif"));
                 
-                var statement = paragraphs[ifIndex].InnerText.Split(' ');
+                var statement = childElements[ifIndex].InnerText.Split(' ');
 
                 var checkStatement = EvaluateStatement(tags[statement[1]], statement[2], statement[3]);
 
@@ -229,14 +229,14 @@
                 {
                     for (int i = ifIndex+1; i <= endIfFinalIndex-1; i++)
                     {
-                        paragraphs[i].Remove();
+                        childElements[i].Remove();
                     }
                 }
-                
-                paragraphs[ifIndex].Remove();
-                paragraphs[endIfFinalIndex].Remove();
 
-                paragraphs = xmlElement.Descendants<Paragraph>().ToList();
+                childElements[ifIndex].Remove();
+                childElements[endIfFinalIndex].Remove();
+
+                childElements = xmlElement.Descendants().ToList();
             }
         }
 
